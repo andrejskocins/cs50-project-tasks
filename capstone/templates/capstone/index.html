@@ -1,0 +1,48 @@
+{% extends "capstone/layout.html" %}
+
+{% block script %}
+
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="task-list">
+    <div class="task-header flex-container">
+        <div></div>
+        <div class="sortable">
+            <a href="?sort=title&order={% if current_sort == 'title' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                TASK {% if current_sort == 'title' %}{% if current_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+        </div>
+        <div class="sortable">
+            <a href="?sort=author&order={% if current_sort == 'author' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                AUTHOR {% if current_sort == 'author' %}{% if current_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+        </div>
+        <div class="sortable">
+            <a href="?sort=start_time&order={% if current_sort == 'start_time' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                START DATE {% if current_sort == 'start_time' %}{% if current_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+        </div>
+        <div class="sortable">
+            <a href="?sort=due_date&order={% if current_sort == 'due_date' and current_order == 'asc' %}desc{% else %}asc{% endif %}">
+                DUE DATE {% if current_sort == 'due_date' %}{% if current_order == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+        </div>
+    </div>
+    {% for task in tasks %}
+        <div class="task-item flex-container {% if task.completed %}completed{% endif %}">
+            <div><input type="checkbox" class="task-checkbox" {% if task.completed %}checked{% endif %}></div>
+            <div class="task-title">{{ task.title }}</div>
+            <div class="task-author">{{ task.author }}</div>
+            <div class="task-start-date">{{ task.start_date }}</div>
+            <div class="task-due-date">{{ task.due_date }}</div>
+        </div>
+    {% empty %}
+        <p>No tasks yet.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

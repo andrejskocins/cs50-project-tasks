@@ -1,0 +1,88 @@
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse 
+from django.db import IntegrityError
+
+from .models import User, Task
+
+# Create your views here.
+def login_view(request):
+    if request.method == "POST":
+
+        # Attempt to sign user in
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+
+        # Check if authentication successful
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "capstone/login.html", {
+                "message": "Invalid username and/or password."
+            })
+    else:
+        return render(request, "capstone/login.html")
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("index"))
+
+
+def register(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "capstone/register.html", {
+                "message": "Passwords must match."
+            })
+
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+        except IntegrityError:
+            return render(request, "capstone/register.html", {
+                "message": "Username already taken."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return render(request, "capstone/register.html")
+
+
+def index(request):
+    # Get sort parameters from URL
+    sort_by = request.GET.get('sort', 'start_time')
+    order = request.GET.get('order', 'desc')
+    
+    # Map URL parameters to model fields
+    sort_fields = {
+        'title': 'title',
+        'author': 'author__username',
+        'start_time': 'start_time',
+        'due_date': 'due_date'
+    }
+    
+    # Get the field to sort by
+    field = sort_fields.get(sort_by, 'start_time')
+    
+    # Add - prefix for descending order
+    if order == 'desc':
+        field = f'-{field}'
+    
+    tasks = Task.objects.order_by(field)
+    
+    return render(request, "capstone/index.html", {
+        "tasks": tasks,
+        "current_sort": sort_by,
+        "current_order": order
+    })

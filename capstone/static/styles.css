@@ -1,0 +1,28 @@
+/* */
+.task-header.flex-container,
+.task-item.flex-container {
+    display: grid;
+    grid-template-columns: 36px 1fr 180px 160px 160px; /* checkbox, title, author, start, due */
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+}
+.task-header.flex-container {
+    font-weight: bold;
+    background: #f5f5f5;
+}
+.task-header a {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+.task-header a:hover {
+    color: #1a73e8;
+}
+.task-item.flex-container {
+    border-bottom: 1px solid #eee;
+}
+.task-item.flex-container:hover { background: #fafafa; }
+.task-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-author, .task-start-date, .task-due-date { font-size: 0.9rem; color: #666; }
+.task-checkbox { width: 18px; height: 18px; }
