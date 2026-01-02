@@ -67,3 +67,21 @@ def index(request):
         "tasks": tasks,
         "task_form": form
     })
+
+def create_task(request):
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.author = request.user  # Set the current user as author
+            task.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            # If form is invalid, re-render with errors
+            tasks = Task.objects.all()
+            return render(request, "capstone/index.html", {
+                "tasks": tasks,
+                "task_form": form
+            })
+    # GET request - redirect to index
+    return HttpResponseRedirect(reverse("index"))

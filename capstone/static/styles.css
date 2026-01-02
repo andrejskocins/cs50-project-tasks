@@ -73,9 +73,22 @@
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
 /* Blur background when modal is open */
-body.modal-open nav,
-body.modal-open .body {
+body.modal-open .body,
+body.modal-open nav {
     filter: blur(3px);
     pointer-events: none;
 }
-body.modal-open { overflow: hidden; }
+
+/* Ensure modal itself is clickable */
+body.modal-open .modal-overlay {
+    pointer-events: auto;
+}
+
+/* Ensure all modal children are clickable */
+body.modal-open .modal-overlay * {
+    pointer-events: auto;
+}
+
+body.modal-open { 
+    overflow: hidden; 
+}

@@ -1,6 +1,6 @@
 {% load static %}
 
-<form id="task-form" method="post" novalidate>
+<form id="task-form" method="post" action="{% url 'create_task' %}" novalidate>
 	{% csrf_token %}
 
 	{% if task_form.non_field_errors %}
