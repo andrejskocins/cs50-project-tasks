@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{% block title %}Social Network{% endblock %}</title>
+        <title>{% block title %}Task Platform{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="{% static 'styles.css' %}" rel="stylesheet">
         {% block script %}
@@ -39,5 +39,63 @@
             {% block body %}
             {% endblock %}
         </div>
+        
+        {% block modals %}{% endblock %}
+
+        <!-- Global Task Modal Overlay -->
+        <div id="task-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Task</h5>
+                    <button type="button" class="close" id="task-modal-close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% if task_form %}
+                        {% include "capstone/task_form.html" %}
+                    {% else %}
+                        <p class="text-muted">Form not available on this page.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <script>
+        // Global modal toggling (reused across pages)
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('task-modal');
+            const closeBtn = document.getElementById('task-modal-close');
+            const cancelBtn = document.getElementById('task-form-cancel');
+
+            function openModal() {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                document.body.classList.add('modal-open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+            function closeModal() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+
+            // Bind open triggers by id or data attribute
+            const openById = document.getElementById('open-task-modal');
+            if (openById) openById.addEventListener('click', openModal);
+            document.querySelectorAll('[data-open-task-modal]')
+                .forEach(el => el.addEventListener('click', openModal));
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            // Escape to close
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+
+            // Expose globally if needed
+            window.openTaskModal = openModal;
+            window.closeTaskModal = closeModal;
+        });
+        </script>
     </body>
 </html>

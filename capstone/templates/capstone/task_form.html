@@ -1,0 +1,34 @@
+{% load static %}
+
+<form id="task-form" method="post" novalidate>
+	{% csrf_token %}
+
+	{% if task_form.non_field_errors %}
+		<div class="alert alert-danger" role="alert">
+			{{ task_form.non_field_errors }}
+		</div>
+	{% endif %}
+
+	<div class="form-group">
+		{{ task_form.title.label_tag }}
+		{{ task_form.title }}
+		{{ task_form.title.errors }}
+	</div>
+
+	<div class="form-group">
+		{{ task_form.description.label_tag }}
+		{{ task_form.description }}
+		{{ task_form.description.errors }}
+	</div>
+
+	<div class="form-group">
+		{{ task_form.due_date.label_tag }}
+		{{ task_form.due_date }}
+		{{ task_form.due_date.errors }}
+	</div>
+
+	<div class="modal-actions">
+		<button type="button" class="btn btn-secondary" id="task-form-cancel">Cancel</button>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+</form>

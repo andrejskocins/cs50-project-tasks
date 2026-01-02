@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db import IntegrityError
 
 from .models import User, Task
+from .forms import TaskForm
 
 # Create your views here.
 def login_view(request):
@@ -61,6 +62,8 @@ def register(request):
 
 def index(request):
     tasks = Task.objects.all()
+    form = TaskForm()
     return render(request, "capstone/index.html", {
-        "tasks": tasks
+        "tasks": tasks,
+        "task_form": form
     })

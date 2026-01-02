@@ -19,15 +19,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Sort the items
         items.sort((a, b) => {
-            let aVal = a.children[index].textContent.trim();
-            let bVal = b.children[index].textContent.trim();
-            
-            // Handle dates
+            const aCell = a.children[index];
+            const bCell = b.children[index];
+            let aVal = aCell.dataset.sort ?? aCell.textContent.trim();
+            let bVal = bCell.dataset.sort ?? bCell.textContent.trim();
+
             if (column === 'start_time' || column === 'due_date') {
-                aVal = new Date(aVal);
-                bVal = new Date(bVal);
+                // Use ISO strings or epoch seconds if provided
+                const aDate = isNaN(aVal) ? new Date(aVal).getTime() : Number(aVal);
+                const bDate = isNaN(bVal) ? new Date(bVal).getTime() : Number(bVal);
+                if (aDate < bDate) return currentSort.ascending ? -1 : 1;
+                if (aDate > bDate) return currentSort.ascending ? 1 : -1;
+                return 0;
             }
-            
+
+            // String comparison, case-insensitive
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
             if (aVal < bVal) return currentSort.ascending ? -1 : 1;
             if (aVal > bVal) return currentSort.ascending ? 1 : -1;
             return 0;
@@ -52,13 +60,29 @@ document.addEventListener('DOMContentLoaded', function() {
             sortTable(column, index);
         });
     });
+
+    // Modal control moved to layout for global reuse
+
 });
 </script>
 {% endblock %}
 
 {% block body %}
 
-<div class="task-list">
+<div class="page-content">
+    <div class="task-controls">
+        <div>
+            <select name="category" id="category">
+                <option value="all-tasks">All Tasks</option>
+                <option value="">All Tasks</option>
+            </select>
+        </div>
+        <div class="add-task-button">
+            <button id="open-task-modal" data-open-task-modal class="btn btn-primary" type="button">Add Task</button>
+        </div>
+    </div>
+
+    <div class="task-list">
     <div class="task-header flex-container">
         <div></div>
         <div class="sortable" data-column="title" data-index="1">TASK</div>
@@ -70,13 +94,18 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="task-item flex-container {% if task.completed %}completed{% endif %}">
             <div><input type="checkbox" class="task-checkbox" {% if task.completed %}checked{% endif %}></div>
             <div class="task-title">{{ task.title }}</div>
-            <div class="task-author">{{ task.author }}</div>
-            <div class="task-start-date">{{ task.start_date }}</div>
-            <div class="task-due-date">{{ task.due_date }}</div>
+            <div class="task-author" data-sort="{{ task.author.username|lower }}">{{ task.author.username }}</div>
+            <div class="task-start-date" data-sort="{{ task.start_time|date:'c' }}">{{ task.start_time|date:"Y-m-d H:i" }}</div>
+            <div class="task-due-date" {% if task.due_date %}data-sort="{{ task.due_date|date:'c' }}"{% endif %}>
+                {% if task.due_date %}{{ task.due_date|date:"Y-m-d" }}{% else %}&nbsp;{% endif %}
+            </div>
         </div>
     {% empty %}
-        <p>No tasks yet.</p>
+        <p>No tasks here.</p>
     {% endfor %}
+    </div>
 </div>
+
+{% block modals %}{% endblock %}
 
 {% endblock %}
